@@ -65,15 +65,6 @@ function processImage($fileName) {
             if(in_array($colorIndex, $backgroundColor)) {
                 $image[$x][$y] = 255;
             }
-            // else {
-            //     echo "[$colorIndex]";
-            //     $color = imagecolorsforindex($res, $colorIndex);
-            //     // print_r($color);
-            //     $r = $color['red'];
-            //     $g = $color['green'];
-            //     $b = $color['blue'];
-            //     echo "[$r $g $b] ";
-            // }
         }
     }
 
@@ -112,11 +103,29 @@ function processImage($fileName) {
         for($charNum=0; $charNum<4; $charNum++)
             if($charCol[$charNum][1]-$charCol[$charNum][0] > 30) { // 字符宽大于30则分裂
                 for($col=3; $col>$charNum; $col--)
-                    $charCol[$col] = $charCol[$col-1];
-                // 分裂直接对半分
+                    if(isset($charCol[$col-1]))
+                        $charCol[$col] = $charCol[$col-1];
+                    else
+                        $charCol[$col] = array();
+                // 按照颜色分割字符
                 $avgWidth = ceil(($charCol[$charNum][0] + $charCol[$charNum][1]) / 2);
-                $charCol[$charNum+1][0] = $avgWidth;
-                $charCol[$charNum][1] = $avgWidth;
+                $divide = false;
+                for($col=$avgWidth-5; $col<$avgWidth+5; $col++) {
+                    $color1 = averageRGB($res, $image[$col]);
+                    $color2 = averageRGB($res, $image[$col+1]);
+                    // 色差大于100则不同字符
+                    if(colorDistance($color1, $color2) > 100) {
+                        $charCol[$charNum+1][0] = $col + 1;
+                        $charCol[$charNum][1] = $col + 1;
+                        $divide = true;
+                        break;
+                    }
+                }
+                // 还没被分割则直接对半分
+                if(!$divide) {
+                    $charCol[$charNum+1][0] = $avgWidth;
+                    $charCol[$charNum][1] = $avgWidth;
+                }
             }
     }
 
@@ -223,4 +232,28 @@ function downloadCodeImage($fileName) {
     $file = fopen($fileName, 'w');
     fwrite($file, $content);
     fclose($file);
+}
+
+function colorDistance($color1, $color2) {
+    $rd = $color1['red']-$color2['red'];
+    $gd = $color1['green']-$color2['green'];
+    $bd = $color1['blue']-$color2['blue'];
+    return sqrt($rd*$rd + $gd*$gd + $bd*$bd);
+}
+
+function averageRGB($res, $line) {
+    $len = count($line);
+    $avgColor = null;
+    for($i=0; $i<$len; $i++)
+        if($line[$i] != 255) {
+            $color = imagecolorsforindex($res, $line[$i]);
+            if($avgColor) {
+                $avgColor['red'] = ($avgColor['red'] + $color['red']) / 2;
+                $avgColor['green'] = ($avgColor['green'] + $color['green']) / 2;
+                $avgColor['blue'] = ($avgColor['blue'] + $color['blue']) / 2;
+            } else {
+                $avgColor = $color;
+            }
+    }
+    return $avgColor;
 }
