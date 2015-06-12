@@ -2,6 +2,11 @@
 set_time_limit(0);
 require 'Denoise.php';
 
+/**
+ * 识别验证码
+ * @param  string $fileName 图片地址
+ * @return string           识别结果
+ */
 function deal($fileName='code.gif') {
     $char = processImage($fileName);
     $theta = readTheta();
@@ -25,6 +30,10 @@ function deal($fileName='code.gif') {
     return $ret;
 }
 
+/**
+ * 解析处理图片成二进制数据并存入文件
+ * @param  integer $n 图片个数
+ */
 function parseImage($n) {
     $file = fopen('./autocode/data.txt', 'a');
     for($i=0;$i<$n;$i++) {
@@ -34,6 +43,11 @@ function parseImage($n) {
     fclose($file);
 }
 
+/**
+ * 处理图片 去噪 二值化
+ * @param  string $fileName 验证码图片路径
+ * @return array            四个字符的二进制矩阵
+ */
 function processImage($fileName) {
     $backgroundColor = array(
         212, 218, 219, // 灰 绿 绿
@@ -169,8 +183,12 @@ function processImage($fileName) {
     // imagedestroy($res);
 }
 
+/**
+ * 读取theta参数
+ * @return array theta
+ */
 function readTheta() {
-    $file = fopen('./train/h2000.txt', 'r');
+    $file = fopen('./train/h.txt', 'r');
     $theta = array();
     while($row = fgets($file)) {
         $rowArr = split(' ', trim($row));
@@ -180,6 +198,11 @@ function readTheta() {
     return $theta;
 }
 
+/**
+ * 写入图片二进制数据到文件
+ * @param  handle $file  文件句柄
+ * @param  array  $image 图片二进制矩阵
+ */
 function saveImageData($file, $image) {
     $output = '';
     $len = count($image);
@@ -191,7 +214,11 @@ function saveImageData($file, $image) {
     fwrite($file, $output);
 }
 
-function getCode($fileName) {
+/**
+ * 下载验证码保存
+ * @param  string $fileName 文件名
+ */
+function downloadCodeImage($fileName) {
     $content = file_get_contents('http://csujwc.its.csu.edu.cn/sys/ValidateCode.aspx');
     $file = fopen($fileName, 'w');
     fwrite($file, $content);

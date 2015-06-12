@@ -4,9 +4,9 @@ import imgdata as data
 
 hmat = img.readTheta()
 
-count = 600
+count = len(data.images)
 yes = 0
-for image,expect in zip(data.images[2000-count:],data.target[2000-count:]):
+for image,expect in zip(data.images,data.target):
     predict = img.h(hmat, image)
     maxn = 0
     for p,c in zip(np.array(predict)[0],data.category):
