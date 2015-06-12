@@ -1,5 +1,4 @@
 <?php
-set_time_limit(0);
 require 'Denoise.php';
 
 /**
@@ -32,12 +31,13 @@ function deal($fileName='code.gif') {
 
 /**
  * 解析处理图片成二进制数据并存入文件
- * @param  integer $n 图片个数
+ * @param  integer $n        图片个数
+ * @param  string  $fileName 图片文件名
  */
-function parseImage($n) {
+function parseImage($n, $fileName='code') {
     $file = fopen('./autocode/data.txt', 'a');
     for($i=0;$i<$n;$i++) {
-        $image = processImage("./autocode/code-{$i}.gif");
+        $image = processImage("./autocode/{$fileName}-{$i}.gif");
         saveImageData($file, $image);
     }
     fclose($file);
@@ -69,7 +69,7 @@ function processImage($fileName) {
     }
 
     // 去噪点
-    $image = Denoise::imageDenoise($image, 120, 60);
+    $image = Denoise::imageDenoise($image, $sizeX, $sizeY);
 
     $columnPx = array();    // 某列像素个数
     $charCol = array();     // 字符的开始列和结束列
@@ -173,23 +173,6 @@ function processImage($fileName) {
     }
 
     return $char;
-
-    // 写回颜色
-    // for($x=0; $x<$sizeX; $x++)
-    //     for($y=0; $y<$sizeY; $y++)
-    //         imagesetpixel($res, $x, $y, $image[$x][$y]);
-    // // 画边框
-    // for($i=0; $i<4; $i++) {
-    //     imageline($res, $charCol[$i][0]-1, 0, $charCol[$i][0]-1, 60, 0);
-    //     imageline($res, $charCol[$i][1], 0, $charCol[$i][1], 60, 0);
-    //     imageline($res, $charCol[$i][0], $charRow[$i][0]-1, $charCol[$i][1], $charRow[$i][0]-1, 0);
-    //     imageline($res, $charCol[$i][0], $charRow[$i][1], $charCol[$i][1], $charRow[$i][1], 0);
-    // }
-
-    // imagegif($res, 'code-out.gif');
-    // header("Content-Type:image/gif");
-    // imagegif($res);
-    // imagedestroy($res);
 }
 
 /**

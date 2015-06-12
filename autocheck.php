@@ -1,8 +1,6 @@
 <?php
 require 'img.php';
 
-run();
-
 /**
  * 自动获取图片、识别、提交教务判断识别正误、写入文件
  * 最后计算识别率并将图片转换成数据保存以供学习改进参数
@@ -10,7 +8,9 @@ run();
  */
 function run($times = 100) {
     $targetFile = fopen('./autocode/target.txt', 'w');
-    $num = 0;
+    $good = 0;
+    $bad = 0;
+
     $login = new LoginJw();
     for($i=0; $i<$times; $i++) {
         if($i%100 == 99) $login->refreshStatus();
@@ -21,20 +21,23 @@ function run($times = 100) {
         fwrite($tempFile, $image);
         fclose($tempFile);
 
+        echo $i.": ";
         $code = deal($tempImage);
         // echo '<img src="'.$tempImage.'"><br>';
         // echo $code;
         if($login->login($code)) {
             fwrite($targetFile, $code);
-            rename($tempImage, "./autocode/code-{$num}.gif");
-            $num ++;
-            if($num%25==0)
+            rename($tempImage, "./autocode/code-{$good}.gif");
+            $good ++;
+            if($good%25==0)
                 fwrite($targetFile, "\n");
+        } else {
+            rename($tempImage, "./autocode/badcode-{$bad}.gif");
+            $bad ++;
         }
     }
     fclose($targetFile);
-    echo "识别率 ".($num/$times*100).'%';
-    parseImage($num);
+    echo "识别率 ".($good/$times*100).'%';
 }
 
 /**

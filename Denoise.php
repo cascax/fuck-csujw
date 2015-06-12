@@ -34,10 +34,6 @@ class Denoise {
     private static function getBlockSize($x, $y, $size) {
         self::$visit[$x][$y] = TRUE;
         $size ++;
-        // 最多递归500层
-        // 此时可能会把余下没有递归的一块当作噪点
-        // 这种情况字符大小为500<n<510
-        if($size > 500) return 500;
 
         for($i=0; $i<4; $i++) {
             $xp = $x + self::$gox[$i]; // 下一步x坐标
