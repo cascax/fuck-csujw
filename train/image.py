@@ -25,9 +25,10 @@ def h(theta, x):
     h = x * theta
     return sigmoid(h)
 
-def trainLogisticRegression(trainX, trainY, alpha, maxIter):
+def trainLogisticRegression(trainX, trainY, alpha, maxIter, theta=[]):
     numSamples, numFeatures = np.shape(trainX)
-    theta = np.ones((numFeatures,1))
+    if not any(theta):
+        theta = np.ones((numFeatures,1))
 
     for x in range(maxIter):
         output = h(theta, trainX)
@@ -52,8 +53,9 @@ def cost(pre, exp):
 
 
 def train(n=800):
+    originTheta = readTheta() # to improve the origin theta
     hmat = []
-    for char in data.category:
+    for char,i in zip(data.category,range(36)):
         target = []
         for t in data.target:
             if t==char:
@@ -62,8 +64,8 @@ def train(n=800):
                 target += [0]
         target = np.array([target]).T
 
-        c = trainLogisticRegression(data.images[:n], target[:n], 0.01, 400)
-        hmat.append(c.T[0])
+        c = trainLogisticRegression(data.images[:n], target[:n], 0.01, 400, originTheta[:,i])
+        hmat.append(np.array(c).T[0])
 
     # write trained theta to file
     hmat = np.array(hmat).T
