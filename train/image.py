@@ -52,7 +52,7 @@ def cost(pre, exp):
     return c
 
 
-def train(n=800):
+def train():
     originTheta = readTheta() # to improve the origin theta
     hmat = []
     for char,i in zip(data.category,range(36)):
@@ -64,7 +64,7 @@ def train(n=800):
                 target += [0]
         target = np.array([target]).T
 
-        c = trainLogisticRegression(data.images[:n], target[:n], 0.01, 400, originTheta[:,i])
+        c = trainLogisticRegression(data.images[:], target[:], 0.01, 400, originTheta[:,i])
         hmat.append(np.array(c).T[0])
 
     # write trained theta to file
@@ -72,4 +72,4 @@ def train(n=800):
     writeTheta(hmat)
 
 if __name__ == '__main__':
-    train(2000)
+    train()

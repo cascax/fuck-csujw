@@ -1,19 +1,18 @@
 <?php
-require 'img.php';
+require 'RecognizeCode.php';
 
 /**
  * 自动获取图片、识别、提交教务判断识别正误、写入文件
- * 最后计算识别率并将图片转换成数据保存以供学习改进参数
  * @param  integer $times 获取次数
  */
 function run($times = 100) {
     $targetFile = fopen('./autocode/target.txt', 'w');
     $good = 0;
     $bad = 0;
-
     $login = new LoginJw();
+    $recognize = new RecognizeCode();
+
     for($i=0; $i<$times; $i++) {
-        if($i%100 == 99) $login->refreshStatus();
         $image = $login->getCodeImage();
         $tempImage = './autocode/code.gif';
 
@@ -22,7 +21,7 @@ function run($times = 100) {
         fclose($tempFile);
 
         echo $i.": ";
-        $code = deal($tempImage);
+        $code = $recognize->deal($tempImage);
         // echo '<img src="'.$tempImage.'"><br>';
         // echo $code;
         if($login->login($code)) {
@@ -35,9 +34,11 @@ function run($times = 100) {
             rename($tempImage, "./autocode/badcode-{$bad}.gif");
             $bad ++;
         }
+        if($i%100 == 99) $login->refreshStatus();
     }
     fclose($targetFile);
     echo "识别率 ".($good/$times*100).'%';
+    return $good;
 }
 
 /**
