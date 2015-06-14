@@ -22,6 +22,7 @@ class RecognizeCode {
         $theta = $this->readTheta();
         $pattern = '0123456789abcdefghigklmnopqrstuvwxyz';
         $ret = '';
+        // 计算36个分类器的分类结果
         for($i=0; $i<4; $i++) {
             $maxn = 0;
             for($patternIter=0; $patternIter<36; $patternIter++) {

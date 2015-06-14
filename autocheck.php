@@ -122,7 +122,7 @@ class LoginJw
         $url = 'http://csujwc.its.csu.edu.cn/_data/index_LOGIN.aspx';
         $data = "__VIEWSTATE={$this->formStatus}&Sel_Type=STU&txt_sdsdfdsfryuiighgdf={$user}&txt_dsfdgtjhjuixssdsdf={$password}&txt_sftfgtrefjdndcfgerg={$code}&typeName=%D1%A7%C9%FA&sdfdfdhgwerewt={$encodeUser}&cxfdsfdshjhjlk={$encodeCode}";
         $header = array(
-                'User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.124 Safari/537.36',
+                'User-Agent: Mozilla/5.0',
                 'Referer: http://csujwc.its.csu.edu.cn/_data/index_LOGIN.aspx',
                 'Cookie: ASP.NET_SessionId=' . $this->session
             );
